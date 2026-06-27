@@ -2,51 +2,66 @@ import { useState } from "react";
 import { Box, Button,TextField, Typography } from "@mui/material";
 // import {APP_IMAGES} from '../../config/image-constants'
 import { Link, useNavigate } from "react-router-dom";
-interface LoginProps {
-  // isLoggedIn: boolean;
-  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-}
-const Login = ({ setIsLoggedIn }: LoginProps) => {
+
+const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
-const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
-  if (!email || !password) {
-    alert("Please enter email and password.");
+  // Validation
+  if (!email || !password || !confirmPassword) {
+    alert("Please fill all fields.");
     return;
   }
 
-  // Get users from localStorage
+  if (password !== confirmPassword) {
+    alert("Password and Confirm Password do not match.");
+    return;
+  }
+
+  // Get existing users
   const users = JSON.parse(localStorage.getItem("users") || "[]");
 
-  // Find matching user
-  const user = users.find(
-    (item: { email: string; password: string }) =>
-      item.email === email && item.password === password
+  // Check if email already exists
+  const userExists = users.find(
+    (user: { email: string }) => user.email === email
   );
 
-  if (!user) {
-    alert("Invalid email or password.");
+  if (userExists) {
+    alert("Email already exists.");
     return;
   }
 
-  // Save logged-in user
-  localStorage.setItem("loggedInUser", JSON.stringify(user));
-  localStorage.setItem("isAuthenticated", "true");
+  // Create new user
+  const newUser = {
+    email,
+    password,
+  };
 
-  alert("Login Successful!");
+  // Save user
+  users.push(newUser);
 
-  // Redirect to Dashboard
-  navigate("/home"); // or "/dashboard"
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("Signup Successful!");
+
+  // Clear form
+  setEmail("");
+  setPassword("");
+  setConfirmPassword("");
+
+  // Redirect to login page
+  navigate("/login2");
 };
 
   return (
     <div>
       <div>
         <Typography variant="h5" className="title">
-          Login Form
+          Signup Form
         </Typography>
       </div>
 
@@ -65,33 +80,27 @@ const handleSubmit = (e: React.FormEvent) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Box style={{ textAlign: "right" }}>
-          <Link to="">Forgot password?</Link>
-        </Box>
+        <TextField
+          label="Confirm Password"
+          type="password"
+          fullWidth
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
         <Button
           type="submit"
           variant="contained"
           size="large"
           fullWidth
           className="common-button"
-         
+          onClick={() => navigate("/login2")}
         >
-          Login
+          Signup
         </Button>
-        <Box style={{ textAlign: "center" }}>
-          Not a member?{" "}
-          <Link
-            onClick={(e) => {
-              e.preventDefault();
-              setIsLoggedIn(false);
-            }}
-          >
-            Signup
-          </Link>
-        </Box>
+       
       </Box>
     </div>
   );
 };
 
-export default Login;
+export default Signup;

@@ -1,8 +1,14 @@
-import React from 'react'
+import { Link } from 'react-router-dom'
 
 const home = () => {
   return (
-    <div>home</div>
+    <>
+    <div>Welcome to Home</div>
+    
+    <Link to='/user-edit'>User Edit</Link> &nbsp; &nbsp;
+    <Link to='/user-details'>User Details</Link> <br /><br />
+    <Link to='/login'>Back</Link>
+    </>
   )
 }
 
